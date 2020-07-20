@@ -581,18 +581,18 @@ Contains any actions triggered as a result of running a task.
 
 </details>
 
-### Metrics task results
+### Summary task results
 
-Metrics task results (tasks that have a `category` of `metrics`) are strictly information in nature. They count a particular entity, such as a type, and display that value. Their main purpose is to help give a summary of the _shape_ and _size_ of a project, and to allow you to chart the changes to that _shape_ and _size_ over time.
+Summary task results (tasks that have a `category` of `metrics`) are strictly informational in nature. They count a particular entity, such as a type, and display that value. Their main purpose is to help give a summary of the _shape_ and _size_ of a project, and to allow you to chart the changes to that _shape_ and _size_ over time.
 
-The metrics task results have a simple integer value for the `count` property equivalent to the following:
+The summary task results have a simple integer value for the `count` property equivalent to the following:
 
 ```json
 "count": { "type": "integer" }
 ```
 
 <details>
-  <summary>Metrics task result example</summary>
+  <summary>Summary task result example</summary>
 
 ```json
 "results": [
