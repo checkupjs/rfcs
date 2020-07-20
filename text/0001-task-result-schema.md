@@ -133,7 +133,7 @@ The below example illustrates the complete proposed data schema for JSON output.
           },
           "required": ["name", "version", "repository", "analyzedFilesCount"]
         },
-        "checkup": {
+        "cli": {
           "type": "object",
           "properties": {
             "schema": {
@@ -200,12 +200,12 @@ The below example illustrates the complete proposed data schema for JSON output.
                               "properties": {
                                 "completed": {
                                   "type": "integer"
-                                },
-                                "total": {
-                                  "type": "integer"
                                 }
                               },
                               "required": ["completed", "total"]
+                            },
+                            "total": {
+                              "type": "integer"
                             },
                             "calculatedPercent": {
                               "type": "integer"
@@ -221,6 +221,9 @@ The below example illustrates the complete proposed data schema for JSON output.
                               "patternProperties": {
                                 ".*": { "type": "integer" }
                               }
+                            },
+                            "total": {
+                              "type": "integer"
                             },
                             "calculatedPercent": {
                               "type": "integer"
@@ -450,7 +453,7 @@ Contains any actions triggered as a result of running a task.
       },
       "required": ["name", "version", "repository", "analyzedFilesCount"]
     },
-    "checkup": {
+    "cli": {
       "type": "object",
       "properties": {
         "schema": {
@@ -487,7 +490,7 @@ Contains any actions triggered as a result of running a task.
     },
     "analyzedFilesCount": 1538
   },
-  "checkup": {
+  "cli": {
     "schema": 1,
     "configHash": "73249aa52d0783c15cd068a47a808543",
     "version": "0.2.2"
@@ -523,18 +526,18 @@ Contains any actions triggered as a result of running a task.
                   "properties": {
                     "completed": {
                       "type": "integer"
-                    },
-                    "total": {
-                      "type": "integer"
                     }
                   },
-                  "required": ["completed", "total"]
+                  "required": ["completed"]
+                },
+                "total": {
+                  "type": "integer"
                 },
                 "calculatedPercent": {
                   "type": "integer"
                 }
               },
-              "required": ["values", "calculcatedPercent"]
+              "required": ["values", "calculcatedPercent", "total"]
             },
             {
               "type": "object",
@@ -545,11 +548,14 @@ Contains any actions triggered as a result of running a task.
                     ".*": { "type": "integer" }
                   }
                 },
+                "total": {
+                  "type": "integer"
+                },
                 "calculatedPercent": {
                   "type": "integer"
                 }
               },
-              "required": ["values", "calculcatedPercent"]
+              "required": ["values", "calculcatedPercent", "total"]
             }
           ]
         },
@@ -666,7 +672,9 @@ The `calculatedPercent` can be calculated using the following:
 ```ts
 let { completed, total } = percent.values;
 
-let calculatedPercent = Math.round((completed / total) * 100);
+let calculatedPercent = Math.round(
+  (percent.values.completed / percent.total) * 100
+);
 ```
 
 The migration task results' `percent` property is equivalent to the following:
@@ -680,18 +688,18 @@ The migration task results' `percent` property is equivalent to the following:
       "properties": {
         "completed": {
           "type": "integer"
-        },
-        "total": {
-          "type": "integer"
         }
       },
-      "required": ["completed", "total"]
+      "required": ["completed"]
+    },
+    "total": {
+      "type": "integer"
     },
     "calculatedPercent": {
       "type": "integer"
     }
   },
-  "required": ["values", "calculcatedPercent"]
+  "required": ["values", "calculcatedPercent", "total"]
 }
 ```
 
@@ -714,9 +722,9 @@ The migration task results' `percent` property is equivalent to the following:
         "key": "Native Classes",
         "percent": {
           "values": {
-            "completed": 0,
-            "total": 357
+            "completed": 0
           },
+          "total": 357,
           "calculatedPercent": 0
         }
         "data": [
@@ -852,6 +860,9 @@ The multi-step validation task results have a `percent` property equivalent to t
         ".*": { "type": "integer" }
       }
     },
+    "total": {
+      "type": "integer"
+    },
     "calculatedPercent": {
       "type": "integer"
     }
@@ -882,6 +893,7 @@ The multi-step validation task results have a `percent` property equivalent to t
             "correctESLintIgnore": 20,
             "correctESLintConfig": 60
           },
+          "total": 100,
           "calculatedPercent": 100
         }
         "data": [
