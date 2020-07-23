@@ -89,250 +89,34 @@ Based on the details listed above, I propose the following:
 
 The below example illustrates the complete proposed data schema for JSON output. Following the example, each of the composite parts will be explained.
 
-<details>
-  <summary>Proposed Schema</summary>
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "type": "object",
-  "properties": {
-    "info": {
-      "type": "object",
-      "properties": {
-        "project": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "version": {
-              "type": "string"
-            },
-            "repository": {
-              "type": "object",
-              "properties": {
-                "totalCommits": {
-                  "type": "integer"
-                },
-                "totalFiles": {
-                  "type": "integer"
-                },
-                "age": {
-                  "type": "string"
-                },
-                "activeDays": {
-                  "type": "string"
-                }
-              },
-              "required": ["totalCommits", "totalFiles", "age", "activeDays"]
-            },
-            "analyzedFilesCount": {
-              "type": "integer"
-            }
-          },
-          "required": ["name", "version", "repository", "analyzedFilesCount"]
-        },
-        "cli": {
-          "type": "object",
-          "properties": {
-            "schema": {
-              "type": "integer"
-            },
-            "configHash": {
-              "type": "string"
-            },
-            "version": {
-              "type": "string"
-            }
-          },
-          "required": ["schema", "configHash", "version"]
-        }
-      }
-    },
-    "results": {
-      "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties": {
-            "info": {
-              "type": "object",
-              "properties": {
-                "taskName": {
-                  "type": "string"
-                },
-                "friendlyTaskName": {
-                  "type": "string"
-                },
-                "taskClassification": {
-                  "type": "object",
-                  "properties": {
-                    "category": {
-                      "type": "string"
-                    },
-                    "group": {
-                      "type": "string"
-                    }
-                  },
-                  "required": ["category"]
-                }
-              },
-              "required": ["taskName", "friendlyTaskName", "taskClassification"]
-            },
-            "result": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "key": {
-                      "type": "string"
-                    },
-                    "count": { "type": "integer" },
-                    "percent": {
-                      "oneOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "values": {
-                              "type": "object",
-                              "properties": {
-                                "completed": {
-                                  "type": "integer"
-                                }
-                              },
-                              "required": ["completed", "total"]
-                            },
-                            "total": {
-                              "type": "integer"
-                            },
-                            "calculatedPercent": {
-                              "type": "integer"
-                            }
-                          },
-                          "required": ["values", "calculcatedPercent"]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "values": {
-                              "type": "object",
-                              "patternProperties": {
-                                ".*": { "type": "integer" }
-                              }
-                            },
-                            "total": {
-                              "type": "integer"
-                            },
-                            "calculatedPercent": {
-                              "type": "integer"
-                            }
-                          },
-                          "required": ["values", "calculcatedPercent"]
-                        }
-                      ]
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "oneOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "object"
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "required": ["key", "count", "data"]
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    "errors": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "taskName": {
-            "type": "string"
-          },
-          "error": {
-            "type": "string"
-          }
-        },
-        "required": ["taskName", "error"]
-      }
-    },
-    "actions": {
-      "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "summary": {
-              "type": "string"
-            },
-            "details": {
-              "type": "string"
-            },
-            "defaultThreshold": {
-              "type": "number"
-            },
-            "items": {
-              "type": "array",
-              "items": {}
-            },
-            "input": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "name",
-            "summary",
-            "details",
-            "defaultThreshold",
-            "items",
-            "input"
-          ]
-        }
-      ]
-    }
-  },
-  "required": ["info", "results", "errors", "actions"]
-}
-```
-
-</details>
-
-<details>
-  <summary>TypeScript Interfaces</summary>
+### TypeScript Interfaces
 
 ```ts
-import { Action, TaskError, TaskMetaData } from './tasks';
+interface TaskResult {
+  info: TaskMetaData;
+  results: Result[];
+}
 
-export interface MigrationCompletion {
-  values: {
-    completed: number;
+interface BaseResult {
+  key: string;
+  type: string;
+  data: Array<string | object>;
+}
+
+export interface SummaryResult extends BaseResult {
+  type: 'summary';
+  count: number;
+}
+
+export interface MultiStepResult extends BaseResult {
+  type: 'multi-step';
+  percent: {
+    values: Record<string, number>;
+    total: number;
   };
-  total: number;
-  calculatedPercent?: number;
 }
 
-export interface MultiStepCompletion {
-  values: Record<string, number>;
-  total: 100;
-  calculatedPercent?: number;
-}
+type Result = SummaryResult | MultiStepResult;
 
 export interface CheckupResult {
   info: {
@@ -349,51 +133,21 @@ export interface CheckupResult {
     cli: {
       schema: number;
       configHash: string;
+      config: CheckupConfig;
       version: string;
+      flags: {
+        paths: [];
+      };
     };
     analyzedFilesCount: number;
   };
-  results: [
-    {
-      info: TaskMetaData;
-      result: [
-        {
-          key: string;
-          count?: number;
-          percent?: MigrationCompletion | MultiStepCompletion;
-          data: Array<string | object>;
-        }
-      ];
-    }
-  ];
+  results: TaskResult[];
   errors: TaskError[];
   actions: Action[];
 }
 ```
 
-</details>
-
-### Schema Structure
-
-```json
-{
-  "info": {
-    //...
-  },
-
-  "results": [
-    //...
-  ],
-
-  "errors": [
-    //...
-  ],
-
-  "actions": [
-    //...
-  ]
-}
-```
+### Checkup Result Interface
 
 #### `info` property
 
@@ -416,59 +170,32 @@ Contains any actions triggered as a result of running a task.
 <details>
   <summary>Schema fragment</summary>
 
-```json
-"info": {
-  "type": "object",
-  "properties": {
-    "project": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "version": {
-          "type": "string"
-        },
-        "repository": {
-          "type": "object",
-          "properties": {
-            "totalCommits": {
-              "type": "integer"
-            },
-            "totalFiles": {
-              "type": "integer"
-            },
-            "age": {
-              "type": "string"
-            },
-            "activeDays": {
-              "type": "string"
-            }
-          },
-          "required": ["totalCommits", "totalFiles", "age", "activeDays"]
-        },
-        "analyzedFilesCount": {
-          "type": "integer"
-        }
-      },
-      "required": ["name", "version", "repository", "analyzedFilesCount"]
-    },
-    "cli": {
-      "type": "object",
-      "properties": {
-        "schema": {
-          "type": "integer"
-        },
-        "configHash": {
-          "type": "string"
-        },
-        "version": {
-          "type": "string"
-        }
-      },
-      "required": ["schema", "configHash", "version"]
-    }
-  }
+```ts
+export interface CheckupResult {
+  info: {
+    project: {
+      name: string;
+      version: string;
+      repository: {
+        totalCommits: number;
+        totalFiles: number;
+        age: string;
+        activeDays: string;
+      };
+    };
+    cli: {
+      schema: number;
+      configHash: string;
+      config: CheckupConfig;
+      version: string;
+      flags: {
+        paths: [];
+      };
+    };
+    analyzedFilesCount: number;
+  };
+
+  // ...
 }
 ```
 
@@ -478,22 +205,24 @@ Contains any actions triggered as a result of running a task.
   <summary>Example</summary>
 
 ```json
-"info": {
-  "project": {
-    "name": "travis",
-    "version": "0.0.1",
-    "repository": {
-      "totalCommits": 5869,
-      "totalFiles": 1537,
-      "age": "8 years",
-      "activeDays": "1379"
+{
+  "info": {
+    "project": {
+      "name": "travis",
+      "version": "0.0.1",
+      "repository": {
+        "totalCommits": 5869,
+        "totalFiles": 1537,
+        "age": "8 years",
+        "activeDays": "1379"
+      },
+      "analyzedFilesCount": 1538
     },
-    "analyzedFilesCount": 1538
-  },
-  "cli": {
-    "schema": 1,
-    "configHash": "73249aa52d0783c15cd068a47a808543",
-    "version": "0.2.2"
+    "cli": {
+      "schema": 1,
+      "configHash": "73249aa52d0783c15cd068a47a808543",
+      "version": "0.2.2"
+    }
   }
 }
 ```
@@ -505,94 +234,33 @@ Contains any actions triggered as a result of running a task.
 <details>
   <summary>Schema fragment</summary>
 
-```json
-"result": {
-  "type": "array",
-  "items": [
-    {
-      "type": "object",
-      "properties": {
-        "key": {
-          "type": "string"
-        },
-        "count": { "type": "integer" },
-        "percent": {
-          "oneOf": [
-            {
-              "type": "object",
-              "properties": {
-                "values": {
-                  "type": "object",
-                  "properties": {
-                    "completed": {
-                      "type": "integer"
-                    }
-                  },
-                  "required": ["completed"]
-                },
-                "total": {
-                  "type": "integer"
-                },
-                "calculatedPercent": {
-                  "type": "integer"
-                }
-              },
-              "required": ["values", "calculcatedPercent", "total"]
-            },
-            {
-              "type": "object",
-              "properties": {
-                "values": {
-                  "type": "object",
-                  "patternProperties": {
-                    ".*": { "type": "integer" }
-                  }
-                },
-                "total": {
-                  "type": "integer"
-                },
-                "calculatedPercent": {
-                  "type": "integer"
-                }
-              },
-              "required": ["values", "calculcatedPercent", "total"]
-            }
-          ]
-        },
-        "data": {
-          "type": "array",
-          "items": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "object"
-              }
-            ]
-          }
-        }
-      },
-      "required": ["key", "count", "data"]
-    }
-  ]
+```ts
+export interface CheckupResult {
+  //...
+
+  results: TaskResult[];
+
+  // ...
 }
 ```
 
 </details>
 
-### Summary task results
+### Summary tasks
 
 Summary task results (tasks that have a `category` of `metrics`) are strictly informational in nature. They count a particular entity, such as a type, and display that value. Their main purpose is to help give a summary of the _shape_ and _size_ of a project, and to allow you to chart the changes to that _shape_ and _size_ over time.
 
 The summary task results have a simple integer value for the `count` property equivalent to the following:
 
-```json
-"count": { "type": "integer" }
+```ts
+interface SummaryResult extends BaseResult {
+  type: 'summary';
+  count: number;
+}
 ```
 
 <details>
-  <summary>Summary task result example</summary>
+  <summary>Summary example</summary>
 
 ```json
 "results": [
@@ -661,50 +329,87 @@ The summary task results have a simple integer value for the `count` property eq
 
 </details>
 
-#### Migration task results
+### Multi-step tasks
 
-Migration task results (tasks that have a `category` of `migration`) determine the completion percentage of a migration. They're intended to help chart the progress of a migration, and help quantify the overall state.
+Multi-step tasks chart the overall completion of a multi-step task. These are used to determine the overall completion of a task that requires multiple, disparate steps to finish.
 
-The `percent` property contains a hash of values, which are used to determine the `calculatedPercent`.
+Multi-step tasks can take one of two forms:
 
-The `calculatedPercent` can be calculated using the following:
+1. Multi-step validation: each step is given a weighed value, ultimately add up to 100, denoting a task as "completed".
+1. Multi-step migration: multiple steps who's counts are compared with a total, determining the completion of a code migration.
+
+#### Multi-step Validation
+
+In order to enforce multi-step validation, task authors need to ensure a few things:
+
+1. Determine the steps that comprise whether a task is "completed" or not
+1. Assign a weighted value (heavier weight to a step that is proportionally more important, or even weights if all steps are of equal importance)
+1. All weights total 100, which is used to derive the percentage. **Note**: this requirement should be enforced through runtime validation.
+
+The multi-step validation task results have a `percent` property equivalent to the following:
 
 ```ts
-let { completed, total } = percent.values;
-
-let calculatedPercent = Math.round(
-  (percent.values.completed / percent.total) * 100
-);
-```
-
-The migration task results' `percent` property is equivalent to the following:
-
-```json
-"percent": {
-  "type": "object",
-  "properties": {
-    "values": {
-      "type": "object",
-      "properties": {
-        "completed": {
-          "type": "integer"
-        }
-      },
-      "required": ["completed"]
-    },
-    "total": {
-      "type": "integer"
-    },
-    "calculatedPercent": {
-      "type": "integer"
-    }
-  },
-  "required": ["values", "calculcatedPercent", "total"]
+{
+  percent: {
+    values: Record<string, number>;
+    total: number;
+  };
 }
 ```
 
+The percent can be calculated using the following:
+
+```ts
+let completed = Object.values(percent.values).reduce(
+  (total, value) => total + value,
+  0
+);
+
+let percent = Math.round((completed / percent.total) * 100);
+```
+
 <details>
-  <summary>Migration task result example</summary>
+  <summary>Multi-step validation example</summary>
+
+```json
+"results": [
+  {
+    "meta": {
+      "taskName": "valid-eslint-configuration",
+      "friendlyTaskName": "Valid ESLint Configuration",
+      "taskClassification": {
+        "category": "best practices"
+      }
+    },
+    "result": [
+      {
+        "key": "Valid ESLint Configuration",
+        "percent": {
+          "values": {
+            "correctDependenciesInstalled": 20,
+            "correctESLintIgnore": 20,
+            "correctESLintConfig": 60
+          },
+          "total": 100
+        }
+        "data": [
+        ]
+      }
+    ]
+  }
+]
+```
+
+</details>
+
+#### Multi-step Migration
+
+Multi-step migration tasks (tasks that have a `category` of `migration`) are a form of multi-step results. They determine the completion percentage of a migration. They're intended to help chart the progress of a migration, and help quantify the overall state.
+
+The `percent` property contains a hash of values, which are used to determine the percentage of completion by summing the values as the numerator, and using the total as the denominator.
+
+<details>
+  <summary>Multi-step migration example</summary>
 
 ```json
 "results": [
@@ -724,8 +429,7 @@ The migration task results' `percent` property is equivalent to the following:
           "values": {
             "completed": 0
           },
-          "total": 357,
-          "calculatedPercent": 0
+          "total": 357
         },
         "data": [
           {
@@ -809,108 +513,18 @@ The migration task results' `percent` property is equivalent to the following:
 
 </details>
 
-### Multi-step validation task
-
-Multi-step validation tasks chart the overall completion of a multi-step task. These are used to determine the overall completion of a task that requires multiple, disparate steps to finish. Those individual steps, each given a weighed value, ultimately add up to 100, denoting a task as "completed".
-
-Due to this requirement, task authors need to ensure a few things:
-
-1. Determine the steps that comprise whether a task is "completed" or not
-1. Assign a weighted value (heavier weight to a step that is proportionally more important, or even weights if all steps are of equal importance)
-1. All weights total 100, which is used to derive the `calculatedPercent` property. **Note**: this requirement should be enforced through runtime validation.
-
-The `calculatedPercent` can be calculated using the following:
-
-```ts
-let values = Object.values(percent.values).reduce(
-  (total, value) => total + value,
-  0
-);
-
-let calculatedPercent = Math.round((values / percent.total) * 100);
-```
-
-The multi-step validation task results have a `percent` property equivalent to the following:
-
-```json
-"percent": {
-  "type": "object",
-  "properties": {
-    "values": {
-      "type": "object",
-      "patternProperties": {
-        ".*": { "type": "integer" }
-      }
-    },
-    "total": {
-      "type": "integer"
-    },
-    "calculatedPercent": {
-      "type": "integer"
-    }
-  },
-  "required": ["values", "calculcatedPercent"]
-}
-```
-
-<details>
-  <summary>Multi-step validation task result example</summary>
-
-```json
-"results": [
-  {
-    "meta": {
-      "taskName": "valid-eslint-configuration",
-      "friendlyTaskName": "Valid ESLint Configuration",
-      "taskClassification": {
-        "category": "best practices"
-      }
-    },
-    "result": [
-      {
-        "key": "Valid ESLint Configuration",
-        "percent": {
-          "values": {
-            "correctDependenciesInstalled": 20,
-            "correctESLintIgnore": 20,
-            "correctESLintConfig": 60
-          },
-          "total": 100,
-          "calculatedPercent": 100
-        }
-        "data": [
-        ]
-      }
-    ]
-  }
-]
-```
-
-</details>
-
 ## `errors` property schema
 
 <details>
   <summary>Schema fragment</summary>
 
 ```json
-"errors": {
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "taskName": {
-        "type": "string"
-      },
-      "error": {
-        "type": "string"
-      }
-    },
-    "required": [
-      "taskName",
-      "error"
-    ]
-  }
+export interface CheckupResult {
+  // ...
+
+  errors: TaskError[];
+
+  // ...
 }
 ```
 
@@ -932,43 +546,11 @@ The multi-step validation task results have a `percent` property equivalent to t
 <details>
   <summary>Schema fragment</summary>
 
-```json
-"actions": {
-  "type": "array",
-  "items": [
-    {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "summary": {
-          "type": "string"
-        },
-        "details": {
-          "type": "string"
-        },
-        "defaultThreshold": {
-          "type": "number"
-        },
-        "items": {
-          "type": "array",
-          "items": {}
-        },
-        "input": {
-          "type": "number"
-        }
-      },
-      "required": [
-        "name",
-        "summary",
-        "details",
-        "defaultThreshold",
-        "items",
-        "input"
-      ]
-    }
-  ]
+```ts
+export interface CheckupResult {
+  // ...
+
+  actions: Action[];
 }
 ```
 
