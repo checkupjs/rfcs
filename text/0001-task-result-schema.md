@@ -726,7 +726,7 @@ The migration task results' `percent` property is equivalent to the following:
           },
           "total": 357,
           "calculatedPercent": 0
-        }
+        },
         "data": [
           {
             "filePath": "/Users/scalvert/Workspace/travis-web/app/adapters/application.js",
@@ -738,8 +738,6 @@ The migration task results' `percent` property is equivalent to the following:
                 "column": 1,
                 "endLine": 1,
                 "endColumn": 2,
-                "severity": 2,
-                "nodeType": null
               },
               {
                 "ruleId": "ember/no-classic-classes",
@@ -748,8 +746,6 @@ The migration task results' `percent` property is equivalent to the following:
                 "column": 1,
                 "endLine": 1,
                 "endColumn": 2,
-                "severity": 2,
-                "nodeType": null
               },
               {
                 "ruleId": "ember/no-classic-components",
@@ -758,8 +754,6 @@ The migration task results' `percent` property is equivalent to the following:
                 "column": 1,
                 "endLine": 1,
                 "endColumn": 2,
-                "severity": 2,
-                "nodeType": null
               },
               {
                 "ruleId": "ember/no-component-lifecycle-hooks",
@@ -768,8 +762,6 @@ The migration task results' `percent` property is equivalent to the following:
                 "column": 1,
                 "endLine": 1,
                 "endColumn": 2,
-                "severity": 2,
-                "nodeType": null
               },
               {
                 "ruleId": "ember/no-computed-properties-in-native-classes",
@@ -778,8 +770,6 @@ The migration task results' `percent` property is equivalent to the following:
                 "column": 1,
                 "endLine": 1,
                 "endColumn": 2,
-                "severity": 2,
-                "nodeType": null
               },
               {
                 "ruleId": "ember/no-get-with-default",
@@ -788,8 +778,6 @@ The migration task results' `percent` property is equivalent to the following:
                 "column": 1,
                 "endLine": 1,
                 "endColumn": 2,
-                "severity": 2,
-                "nodeType": null
               },
               {
                 "ruleId": "ember/require-tagless-components",
@@ -798,8 +786,6 @@ The migration task results' `percent` property is equivalent to the following:
                 "column": 1,
                 "endLine": 1,
                 "endColumn": 2,
-                "severity": 2,
-                "nodeType": null
               },
               {
                 "ruleId": "ember/no-mixins",
@@ -808,14 +794,10 @@ The migration task results' `percent` property is equivalent to the following:
                 "column": 1,
                 "endLine": 1,
                 "endColumn": 2,
-                "severity": 2,
-                "nodeType": null
               }
             ],
             "errorCount": 8,
             "warningCount": 0,
-            "fixableErrorCount": 0,
-            "fixableWarningCount": 0,
             "source": "import config from 'travis/config/environment';\nimport ActiveModelAdapter from 'active-model-adapter';\nimport { inject as service } from '@ember/service';\n\nexport default ActiveModelAdapter.extend({\n  auth: service(),\n  features: service(),\n\n  host: config.apiEndpoint,\n  coalesceFindRequests: true,\n\n  // Before Ember Data 2.0 the default behaviour of running `findAll` was to get\n  // new records only when there're no records in the store. This will change\n  // to a different strategy in 2.0: when you run `findAll` it will not get any\n  // new data initially, but it will try loading new data in the background.\n  //\n  // I'm disabling the new behaviour for now.\n  shouldBackgroundReloadRecord() {\n    return false;\n  },\n\n  ajaxOptions() {\n    let hash = this._super(...arguments);\n    hash.headers = hash.headers || {};\n    hash.headers['accept'] = 'application/json; version=2';\n    hash.headers['X-Client-Release'] = config.release;\n\n    let token = this.get('auth.token');\n    if (token) {\n      if (!hash.headers['Authorization']) {\n        hash.headers['Authorization'] = `token ${token}`;\n      }\n    }\n\n    return hash;\n  },\n\n  findMany(store, type, ids) {\n    return this.ajax(this.buildURL(type.modelName), 'GET', {\n      data: {\n        ids: ids\n      }\n    });\n  },\n\n  handleResponse(status, headers, payload) {\n    if (status > 299) {\n      if (this.get('features.debugLogging')) {\n        // eslint-disable-next-line\n        console.log(\"[ERROR] API responded with an error (\" + status + \"): \" + (JSON.stringify(payload)));\n      }\n    }\n\n    return this._super(...arguments);\n  },\n});\n"
           }
         ]
