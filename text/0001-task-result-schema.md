@@ -92,15 +92,28 @@ The below example illustrates the complete proposed data schema for JSON output.
 ### TypeScript Interfaces
 
 ```ts
-interface TaskResult {
-  info: TaskMetaData;
-  results: Result[];
+export type IndexableObject = { [key: string]: any };
+
+export type DataSummary = {
+  values: Record<string, number>;
+  dataKey: string;
+  total: number;
+};
+
+export interface TaskResult {
+  info: {
+    taskName: TaskName;
+    taskDisplayName: string;
+    category: string;
+    group?: string;
+  };
+  result: Record<string, any>;
 }
 
 interface BaseResult {
   key: string;
   type: string;
-  data: Array<string | object>;
+  data: Array<string | IndexableObject>;
 }
 
 export interface SummaryResult extends BaseResult {
@@ -108,15 +121,22 @@ export interface SummaryResult extends BaseResult {
   count: number;
 }
 
-export interface MultiStepResult extends BaseResult {
-  type: 'multi-step';
-  percent: {
+export interface MultiValueResult extends BaseResult {
+  type: 'multi-value';
+  dataSummary: DataSummary;
+}
+
+export interface LookupValueResult extends BaseResult {
+  type: 'lookup-value';
+  dataSummary: {
     values: Record<string, number>;
+    dataKey: string;
+    valueKey: string;
     total: number;
   };
 }
 
-type Result = SummaryResult | MultiStepResult;
+type Result = SummaryResult | MultiValueResult | LookupValueResult;
 
 export interface CheckupResult {
   info: {
@@ -194,8 +214,9 @@ export interface CheckupResult {
     };
     analyzedFilesCount: number;
   };
-
-  // ...
+  results: TaskResult[];
+  errors: TaskError[];
+  actions: Action[];
 }
 ```
 
@@ -221,7 +242,11 @@ export interface CheckupResult {
     "cli": {
       "schema": 1,
       "configHash": "73249aa52d0783c15cd068a47a808543",
+      "config": "",
       "version": "0.2.2"
+      flags: {
+        paths: ['*.js']
+      }
     }
   }
 }
@@ -246,14 +271,30 @@ export interface CheckupResult {
 
 </details>
 
-### Summary tasks
+Results contain one or more result objects, which represent the data Checkup has gathered. At their core, they contain a simpler interface:
+
+```typescript
+interface BaseResult {
+  key: string;
+  type: string;
+  data: Array<string | IndexableObject>;
+}
+```
+
+- `key` - represents a unique identifier
+- `type` - the result type ('summary', 'multi-value', 'lookup-value')
+- `data` - the data Checkup has gathered and will ultimately operate on
+
+All result types contain these core properties, but each add additional data to give different shapes to that data, depending on need.
+
+### Summary results
 
 Summary task results (tasks that have a `category` of `metrics`) are strictly informational in nature. They count a particular entity, such as a type, and display that value. Their main purpose is to help give a summary of the _shape_ and _size_ of a project, and to allow you to chart the changes to that _shape_ and _size_ over time.
 
-The summary task results have a simple integer value for the `count` property equivalent to the following:
+The summary results have a simple integer value for the `count` property equivalent to the following:
 
 ```ts
-interface SummaryResult extends BaseResult {
+export interface SummaryResult extends BaseResult {
   type: 'summary';
   count: number;
 }
@@ -329,70 +370,83 @@ interface SummaryResult extends BaseResult {
 
 </details>
 
-### Multi-step tasks
+### Multi value results
 
-Multi-step tasks chart the overall completion of a multi-step task. These are used to determine the overall completion of a task that requires multiple, disparate steps to finish.
+Multi value results break down the data in specific ways. These are used to determine ways to sort the data in order to derive insights.
 
-Multi-step tasks can take one of two forms:
-
-1. Multi-step validation: each step is given a weighed value, ultimately add up to 100, denoting a task as "completed".
-1. Multi-step migration: multiple steps who's counts are compared with a total, determining the completion of a code migration.
-
-#### Multi-step Validation
-
-In order to enforce multi-step validation, task authors need to ensure a few things:
-
-1. Determine the steps that comprise whether a task is "completed" or not
-1. Assign a weighted value (heavier weight to a step that is proportionally more important, or even weights if all steps are of equal importance)
-1. All weights total 100, which is used to derive the percentage. **Note**: this requirement should be enforced through runtime validation.
-
-The multi-step validation task results have a `percent` property equivalent to the following:
+Multi value results contain a bit more information than summary results.
 
 ```ts
 {
-  percent: {
+  dataSummary: {
     values: Record<string, number>;
+    dataKey: string;
     total: number;
   };
 }
 ```
 
-The percent can be calculated using the following:
+- `dataSummary.values` - a dictionary of values used to subdivide and count specific pieces of data
+- `dataSummary.dataKey` - a string representing a property name that is the source of the aggregate data
+- `dataSummary.total`- the sum of `data` of the parent result
+
+The dataSummary can be used to calculate percentages:
 
 ```ts
-let completed = Object.values(percent.values).reduce(
+let completed = Object.values(dataSummary.values).reduce(
   (total, value) => total + value,
   0
 );
 
-let percent = Math.round((completed / percent.total) * 100);
+let dataSummary = Math.round((completed / dataSummary.total) * 100);
 ```
 
+The `dataSummary` contains a `dataKey` configuration value, which allows you to specify a key corresponding to the
+source of the values in the `values` dictionary. The `dataKey` is used to look up a property on the data, and the presence of unique values are used to count the total occurrences of that value.
+
 <details>
-  <summary>Multi-step validation example</summary>
+  <summary>Multi value example</summary>
+
+In the example below, the `ruleId` `dataKey` is used to lookup the values referenced by the `ruleId` property in the data, and the occurrences of those unique values are summed and used as the value.
 
 ```json
 "results": [
   {
-    "meta": {
-      "taskName": "valid-eslint-configuration",
-      "friendlyTaskName": "Valid ESLint Configuration",
-      "taskClassification": {
-        "category": "best practices"
-      }
+    "info": {
+      "taskName": "eslint-summary",
+      "taskDisplayName": "Eslint Summary",
+      "category": "linting"
     },
     "result": [
       {
-        "key": "Valid ESLint Configuration",
-        "percent": {
+        "key": "eslint-errors",
+        "type": "multi-value",
+        "dataSummary": {
           "values": {
-            "correctDependenciesInstalled": 20,
-            "correctESLintIgnore": 20,
-            "correctESLintConfig": 60
+            "no-prototype-builtins": 20,
+            "no-redeclare": 3
           },
-          "total": 100
-        }
+          "dataKey": "ruleId",
+          "total": 23
+        },
         "data": [
+          {
+            "filePath": "/app/adapters/preference.js",
+            "ruleId": "no-prototype-builtins",
+            "message": "Do not access Object.prototype method 'hasOwnProperty' from target object.",
+            "severity": 2,
+            "line": 17,
+            "column": 31
+          },
+          {
+            "filePath": "/app/components/x-tracer.js",
+            "ruleId": "no-redeclare",
+            "message": "'window' is already defined as a built-in global variable.",
+            "severity": 2,
+            "line": 1,
+            "column": 25
+          },
+          //...
         ]
       }
     ]
@@ -400,110 +454,54 @@ let percent = Math.round((completed / percent.total) * 100);
 ]
 ```
 
-</details>
+### Lookup value results
 
-#### Multi-step Migration
+Lookup value results are similar to multi value results, in that they summarize the data using a `dataSummary` property. Also similar to multi value results, they employ a `dataKey` to lookup the values of the properties in the data that the `dataKey` references.
 
-Multi-step migration tasks (tasks that have a `category` of `migration`) are a form of multi-step results. They determine the completion percentage of a migration. They're intended to help chart the progress of a migration, and help quantify the overall state.
-
-The `percent` property contains a hash of values, which are used to determine the percentage of completion by summing the values as the numerator, and using the total as the denominator.
+In addition to the `dataKey`, they additionally have a `valueKey`. While the `dataKey` values ultimately form the keys in the `values` dictionary, the `valueKey`'s values are summed to form the numeric value of those data keys.
 
 <details>
-  <summary>Multi-step migration example</summary>
+  <summary>Lookup value example</summary>
+
+In the example below, the `extension` `dataKey` is used to lookup the values referenced by the `extension` property in the data. The `lines` `valueKey` is used to summarize the values.
 
 ```json
 "results": [
   {
-    "meta": {
-      "taskName": "octane-migration-status",
-      "friendlyTaskName": "Ember Octane Migration Status",
-      "taskClassification": {
-        "category": "migrations",
-        "group": "ember"
-      }
+    "info": {
+      "taskName": "lines-of-code",
+      "taskDisplayName": "Lines of Code",
+      "category": "metrics"
     },
     "result": [
       {
-        "key": "Native Classes",
-        "percent": {
+        "key": "lines of code",
+        "type": "lookup-value",
+        "dataSummary": {
           "values": {
-            "completed": 0
+            "js": 44939,
+            "html": 201,
+            "scss": 14355,
+            "hbs": 10803,
+            "svg": 22836,
+            "rb": 608
           },
-          "total": 357
+          "dataKey": "extension",
+          "valueKey": "lines",
+          "total": 93742
         },
         "data": [
           {
-            "filePath": "/Users/scalvert/Workspace/travis-web/app/adapters/application.js",
-            "messages": [
-              {
-                "ruleId": "ember/no-actions-hash",
-                "message": "Definition for rule 'ember/no-actions-hash' was not found.",
-                "line": 1,
-                "column": 1,
-                "endLine": 1,
-                "endColumn": 2,
-              },
-              {
-                "ruleId": "ember/no-classic-classes",
-                "message": "Definition for rule 'ember/no-classic-classes' was not found.",
-                "line": 1,
-                "column": 1,
-                "endLine": 1,
-                "endColumn": 2,
-              },
-              {
-                "ruleId": "ember/no-classic-components",
-                "message": "Definition for rule 'ember/no-classic-components' was not found.",
-                "line": 1,
-                "column": 1,
-                "endLine": 1,
-                "endColumn": 2,
-              },
-              {
-                "ruleId": "ember/no-component-lifecycle-hooks",
-                "message": "Definition for rule 'ember/no-component-lifecycle-hooks' was not found.",
-                "line": 1,
-                "column": 1,
-                "endLine": 1,
-                "endColumn": 2,
-              },
-              {
-                "ruleId": "ember/no-computed-properties-in-native-classes",
-                "message": "Definition for rule 'ember/no-computed-properties-in-native-classes' was not found.",
-                "line": 1,
-                "column": 1,
-                "endLine": 1,
-                "endColumn": 2,
-              },
-              {
-                "ruleId": "ember/no-get-with-default",
-                "message": "Definition for rule 'ember/no-get-with-default' was not found.",
-                "line": 1,
-                "column": 1,
-                "endLine": 1,
-                "endColumn": 2,
-              },
-              {
-                "ruleId": "ember/require-tagless-components",
-                "message": "Definition for rule 'ember/require-tagless-components' was not found.",
-                "line": 1,
-                "column": 1,
-                "endLine": 1,
-                "endColumn": 2,
-              },
-              {
-                "ruleId": "ember/no-mixins",
-                "message": "Definition for rule 'ember/no-mixins' was not found.",
-                "line": 1,
-                "column": 1,
-                "endLine": 1,
-                "endColumn": 2,
-              }
-            ],
-            "errorCount": 8,
-            "warningCount": 0,
-            "source": "import config from 'travis/config/environment';\nimport ActiveModelAdapter from 'active-model-adapter';\nimport { inject as service } from '@ember/service';\n\nexport default ActiveModelAdapter.extend({\n  auth: service(),\n  features: service(),\n\n  host: config.apiEndpoint,\n  coalesceFindRequests: true,\n\n  // Before Ember Data 2.0 the default behaviour of running `findAll` was to get\n  // new records only when there're no records in the store. This will change\n  // to a different strategy in 2.0: when you run `findAll` it will not get any\n  // new data initially, but it will try loading new data in the background.\n  //\n  // I'm disabling the new behaviour for now.\n  shouldBackgroundReloadRecord() {\n    return false;\n  },\n\n  ajaxOptions() {\n    let hash = this._super(...arguments);\n    hash.headers = hash.headers || {};\n    hash.headers['accept'] = 'application/json; version=2';\n    hash.headers['X-Client-Release'] = config.release;\n\n    let token = this.get('auth.token');\n    if (token) {\n      if (!hash.headers['Authorization']) {\n        hash.headers['Authorization'] = `token ${token}`;\n      }\n    }\n\n    return hash;\n  },\n\n  findMany(store, type, ids) {\n    return this.ajax(this.buildURL(type.modelName), 'GET', {\n      data: {\n        ids: ids\n      }\n    });\n  },\n\n  handleResponse(status, headers, payload) {\n    if (status > 299) {\n      if (this.get('features.debugLogging')) {\n        // eslint-disable-next-line\n        console.log(\"[ERROR] API responded with an error (\" + status + \"): \" + (JSON.stringify(payload)));\n      }\n    }\n\n    return this._super(...arguments);\n  },\n});\n"
-          }
+            "filePath": "/.eslintrc.js",
+            "extension": "js",
+            "lines": 359
+          },
+          {
+            "filePath": "/.template-lintrc.js",
+            "extension": "js",
+            "lines": 5
+          },
+          //...
         ]
       }
     ]
