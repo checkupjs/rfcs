@@ -454,6 +454,8 @@ In the example below, the `ruleId` `dataKey` is used to lookup the values refere
 ]
 ```
 
+</details>
+
 ### Lookup value results
 
 Lookup value results are similar to multi value results, in that they summarize the data using a `dataSummary` property. Also similar to multi value results, they employ a `dataKey` to lookup the values of the properties in the data that the `dataKey` references.
