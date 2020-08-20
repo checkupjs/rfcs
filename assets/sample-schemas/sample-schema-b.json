@@ -1,0 +1,485 @@
+{
+  "info": {
+    "project": {
+      "name": "travis",
+      "version": "0.0.1",
+      "repository": {
+        "totalCommits": 5869,
+        "totalFiles": 1537,
+        "age": "8 years",
+        "activeDays": "1379"
+      },
+      "analyzedFilesCount": 1538
+    },
+    "checkup": {
+      "schema": 1,
+      "configHash": "73249aa52d0783c15cd068a47a808543",
+      "version": "0.2.2"
+    }
+  },
+
+  "results": [
+    {
+      "info": {
+        "taskName": "ember-types",
+        "friendlyTaskName": "Ember Types",
+        "taskClassification": {
+          "category": "metrics",
+          "group": "ember"
+        }
+      },
+      "result": [
+        {
+          "key": "components",
+          "count": 11,
+          "data": [
+            "app/components/account-token.js",
+            "app/components/active-repo-count.js",
+            "app/components/add-cron-job.js",
+            "app/components/add-env-var.js",
+            "app/components/add-ssh-key.js",
+            "app/components/annotated-yaml.js",
+            "app/components/beta-feature.js",
+            "app/components/billing-summary-status.js",
+            "app/components/billing/account.js",
+            "app/components/billing/address.js",
+            "app/components/billing/authorization.js"
+          ]
+        },
+        {
+          "key": "services",
+          "count": 9,
+          "data": [
+            "app/services/accounts.js",
+            "app/services/ajax.js",
+            "app/services/animation.js",
+            "app/services/api.js",
+            "app/services/app-loading.js",
+            "app/services/auth.js",
+            "app/services/broadcasts.js",
+            "app/services/external-links.js",
+            "app/services/feature-flags.js"
+          ]
+        },
+        {
+          "key": "mixins",
+          "count": 9,
+          "data": [
+            "app/mixins/branch-searching.js",
+            "app/mixins/build-favicon.js",
+            "app/mixins/builds/load-more.js",
+            "app/mixins/components/form-select.js",
+            "app/mixins/components/with-config-validation.js",
+            "app/mixins/controller/account-repositories.js",
+            "app/mixins/controller/billing.js",
+            "app/mixins/duration-attributes.js",
+            "app/mixins/duration-calculations.js",
+            "app/mixins/polling.js"
+          ]
+        }
+      ]
+    },
+
+    {
+      "info": {
+        "taskName": "ember-in-repo-addons-engines",
+        "friendlyTaskName": "Ember In-Repo Addons / Engines",
+        "taskClassification": {
+          "category": "metrics",
+          "group": "ember"
+        }
+      },
+      "result": [
+        {
+          "key": "In-repo Addons",
+          "count": 2,
+          "data": ["feed", "profile"]
+        },
+        {
+          "key": "In-repo Engines",
+          "count": 2,
+          "data": ["feed", "profile"]
+        }
+      ]
+    },
+
+    {
+      "info": {
+        "taskName": "lines-of-code",
+        "friendlyTaskName": "Lines of Code",
+        "taskClassification": {
+          "category": "metrics"
+        }
+      },
+      "result": [
+        {
+          "key": "md",
+          "count": 769,
+          "data": [
+            {
+              "total": 769,
+              "todo": "N/A",
+              "block": "N/A",
+              "blockEmpty": "N/A",
+              "comment": "N/A",
+              "empty": "N/A",
+              "mixed": "N/A",
+              "single": "N/A",
+              "source": "N/A"
+            }
+          ]
+        },
+        {
+          "key": "js",
+          "count": 44095,
+          "data": [
+            {
+              "total": 44095,
+              "todo": 25,
+              "block": 265,
+              "blockEmpty": 14,
+              "comment": 1403,
+              "empty": 7096,
+              "mixed": 201,
+              "single": 1138,
+              "source": 35811
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "meta": {
+        "taskName": "ember-dependencies",
+        "friendlyTaskName": "Ember Dependencies",
+        "taskClassification": {
+          "category": "dependencies",
+          "group": "ember"
+        }
+      },
+      "result": [
+        {
+          "key": "ember core libraries",
+          "count": 3,
+          "data": [
+            {
+              "name": "ember-source",
+              "version": "~3.12.0"
+            },
+            {
+              "name": "ember-cli",
+              "version": "~3.12.0"
+            },
+            {
+              "name": "ember-data",
+              "version": "~3.12.0"
+            }
+          ]
+        },
+        {
+          "key": "ember addon dependencies",
+          "count": 0,
+          "data": []
+        }
+      ]
+    },
+
+    {
+      "meta": {
+        "taskName": "outdated-dependencies",
+        "friendlyTaskName": "Outdated Dependencies",
+        "taskClassification": {
+          "category": "dependencies"
+        }
+      },
+      "result": [
+        {
+          "key": "major",
+          "count": 1,
+          "data": [
+            {
+              "name": "@ember/optional-features",
+              "latest": "2.3.0",
+              "installed": "1.0.0",
+              "wanted": "2.3.0",
+              "packageJson": "^1.0.0",
+              "devDependency": true
+            }
+          ]
+        },
+        {
+          "key": "minor",
+          "count": 0,
+          "data": []
+        },
+        {
+          "key": "patch",
+          "count": 0,
+          "data": []
+        },
+        {
+          "key": "nonSemver",
+          "count": 0,
+          "data": []
+        }
+      ]
+    },
+
+    {
+      "meta": {
+        "taskName": "octane-migration-status",
+        "friendlyTaskName": "Ember Octane Migration Status",
+        "taskClassification": {
+          "category": "migrations",
+          "group": "ember"
+        }
+      },
+      "result": [
+        {
+          "key": "Native Classes",
+          "count": {
+            "completed": 0,
+            "total": 357
+          },
+          "data": [
+            {
+              "filePath": "/Users/scalvert/Workspace/travis-web/app/adapters/application.js",
+              "messages": [
+                {
+                  "ruleId": "ember/no-actions-hash",
+                  "message": "Definition for rule 'ember/no-actions-hash' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-classic-classes",
+                  "message": "Definition for rule 'ember/no-classic-classes' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-classic-components",
+                  "message": "Definition for rule 'ember/no-classic-components' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-component-lifecycle-hooks",
+                  "message": "Definition for rule 'ember/no-component-lifecycle-hooks' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-computed-properties-in-native-classes",
+                  "message": "Definition for rule 'ember/no-computed-properties-in-native-classes' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-get-with-default",
+                  "message": "Definition for rule 'ember/no-get-with-default' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/require-tagless-components",
+                  "message": "Definition for rule 'ember/require-tagless-components' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-mixins",
+                  "message": "Definition for rule 'ember/no-mixins' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                }
+              ],
+              "errorCount": 8,
+              "warningCount": 0,
+              "fixableErrorCount": 0,
+              "fixableWarningCount": 0,
+              "source": "import config from 'travis/config/environment';\nimport ActiveModelAdapter from 'active-model-adapter';\nimport { inject as service } from '@ember/service';\n\nexport default ActiveModelAdapter.extend({\n  auth: service(),\n  features: service(),\n\n  host: config.apiEndpoint,\n  coalesceFindRequests: true,\n\n  // Before Ember Data 2.0 the default behaviour of running `findAll` was to get\n  // new records only when there're no records in the store. This will change\n  // to a different strategy in 2.0: when you run `findAll` it will not get any\n  // new data initially, but it will try loading new data in the background.\n  //\n  // I'm disabling the new behaviour for now.\n  shouldBackgroundReloadRecord() {\n    return false;\n  },\n\n  ajaxOptions() {\n    let hash = this._super(...arguments);\n    hash.headers = hash.headers || {};\n    hash.headers['accept'] = 'application/json; version=2';\n    hash.headers['X-Client-Release'] = config.release;\n\n    let token = this.get('auth.token');\n    if (token) {\n      if (!hash.headers['Authorization']) {\n        hash.headers['Authorization'] = `token ${token}`;\n      }\n    }\n\n    return hash;\n  },\n\n  findMany(store, type, ids) {\n    return this.ajax(this.buildURL(type.modelName), 'GET', {\n      data: {\n        ids: ids\n      }\n    });\n  },\n\n  handleResponse(status, headers, payload) {\n    if (status > 299) {\n      if (this.get('features.debugLogging')) {\n        // eslint-disable-next-line\n        console.log(\"[ERROR] API responded with an error (\" + status + \"): \" + (JSON.stringify(payload)));\n      }\n    }\n\n    return this._super(...arguments);\n  },\n});\n"
+            }
+          ]
+        },
+        {
+          "key": "Tagless Components",
+          "count": {
+            "total": 159,
+            "completed": 0
+          },
+          "data": [
+            {
+              "filePath": "/Users/scalvert/Workspace/travis-web/app/components/account-token.js",
+              "messages": [
+                {
+                  "ruleId": "ember/no-actions-hash",
+                  "message": "Definition for rule 'ember/no-actions-hash' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-classic-classes",
+                  "message": "Definition for rule 'ember/no-classic-classes' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-classic-components",
+                  "message": "Definition for rule 'ember/no-classic-components' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-component-lifecycle-hooks",
+                  "message": "Definition for rule 'ember/no-component-lifecycle-hooks' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-computed-properties-in-native-classes",
+                  "message": "Definition for rule 'ember/no-computed-properties-in-native-classes' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-get-with-default",
+                  "message": "Definition for rule 'ember/no-get-with-default' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/require-tagless-components",
+                  "message": "Definition for rule 'ember/require-tagless-components' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                },
+                {
+                  "ruleId": "ember/no-mixins",
+                  "message": "Definition for rule 'ember/no-mixins' was not found.",
+                  "line": 1,
+                  "column": 1,
+                  "endLine": 1,
+                  "endColumn": 2,
+                  "severity": 2,
+                  "nodeType": null
+                }
+              ],
+              "errorCount": 8,
+              "warningCount": 0,
+              "fixableErrorCount": 0,
+              "fixableWarningCount": 0,
+              "source": "import Component from '@ember/component';\n\nexport default Component.extend({\n  classNames: ['account-token'],\n\n  tokenIsVisible: false,\n  showCopySuccess: false,\n\n  actions: {\n    tokenVisibility() {\n      if (this.showCopySuccess) {\n        this.toggleProperty('showCopySuccess');\n      }\n      this.toggleProperty('tokenIsVisible');\n    },\n\n    copyTokenSuccessful() {\n      if (!this.showCopySuccess) {\n        this.toggleProperty('showCopySuccess');\n      }\n    },\n  },\n});\n"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "errors": [],
+
+  "actions": [
+    {
+      "name": "reduce-outdated-major-dependencies",
+      "summary": "Update outdated major versions",
+      "details": "25 major versions outdated",
+      "defaultThreshold": 0.05,
+      "items": [],
+      "input": 0.21739130434782608
+    },
+    {
+      "name": "reduce-outdated-minor-dependencies",
+      "summary": "Update outdated minor versions",
+      "details": "21 minor versions outdated",
+      "defaultThreshold": 0.05,
+      "items": [],
+      "input": 0.1826086956521739
+    },
+    {
+      "name": "reduce-outdated-dependencies",
+      "summary": "Update outdated versions",
+      "details": "50% of versions outdated",
+      "defaultThreshold": 0.2,
+      "items": [],
+      "input": 0.5043478260869565
+    },
+    {
+      "name": "reduce-eslint-errors",
+      "summary": "Reduce number of eslint errors",
+      "details": "23 total errors",
+      "defaultThreshold": 20,
+      "items": ["Total eslint errors: 23"],
+      "input": 23
+    },
+    {
+      "name": "reduce-eslint-disable-usages",
+      "summary": "Reduce number of eslint-disable usages",
+      "details": "32 usages of template-lint-disable",
+      "defaultThreshold": 2,
+      "items": ["Total eslint-disable usages: 32"],
+      "input": 32
+    }
+  ]
+}

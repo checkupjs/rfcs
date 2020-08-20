@@ -1,0 +1,181 @@
+[
+  {
+    "meta": {
+      "taskName": "ember-types",
+      "friendlyTaskName": "Ember Types",
+      "taskClassification": {
+        "category": "metrics",
+        "group": "ember"
+      }
+    },
+    "result": {
+      "keys": ["components", "services", "mixins"],
+      "counts": {
+        "components": 33,
+        "services": 0,
+        "mixins": 22
+      },
+      "results": {
+        "components": [
+          "app/components/account-token.js",
+          "app/components/active-repo-count.js",
+          "app/components/add-cron-job.js",
+          "app/components/add-env-var.js",
+          "app/components/add-ssh-key.js",
+          "app/components/annotated-yaml.js",
+          "app/components/beta-feature.js",
+          "app/components/billing-summary-status.js",
+          "app/components/billing/account.js",
+          "app/components/billing/address.js",
+          "app/components/billing/authorization.js"
+        ],
+        "services": [
+          "app/services/accounts.js",
+          "app/services/ajax.js",
+          "app/services/animation.js",
+          "app/services/api.js",
+          "app/services/app-loading.js",
+          "app/services/auth.js",
+          "app/services/broadcasts.js",
+          "app/services/external-links.js",
+          "app/services/feature-flags.js"
+        ],
+        "mixins": [
+          "app/mixins/branch-searching.js",
+          "app/mixins/build-favicon.js",
+          "app/mixins/builds/load-more.js",
+          "app/mixins/components/form-select.js",
+          "app/mixins/components/with-config-validation.js",
+          "app/mixins/controller/account-repositories.js",
+          "app/mixins/controller/billing.js",
+          "app/mixins/duration-attributes.js",
+          "app/mixins/duration-calculations.js",
+          "app/mixins/polling.js"
+        ]
+      }
+    }
+  },
+
+  {
+    "meta": {
+      "taskName": "ember-in-repo-addons-engines",
+      "friendlyTaskName": "Ember In-Repo Addons / Engines",
+      "taskClassification": {
+        "category": "metrics",
+        "group": "ember"
+      }
+    },
+    "result": {
+      "keys": ["inRepoAddons", "inRepoEngines"],
+      "counts": {
+        "inRepoAddons": 2,
+        "inRepoEngines": 3
+      },
+      "results": {
+        "inRepoAddons": ["feed", "profile"],
+        "inRepoEngines": ["feed", "profile"]
+      }
+    }
+  },
+
+  {
+    "meta": {
+      "taskName": "lines-of-code",
+      "friendlyTaskName": "Lines of Code",
+      "taskClassification": {
+        "category": "metrics"
+      }
+    },
+    "result": {
+      "keys": ["md", "js"],
+      "counts": {
+        "md": 769,
+        "js": 44095
+      },
+      "results": {
+        "md": {
+          "total": 769,
+          "todo": "N/A",
+          "block": "N/A",
+          "blockEmpty": "N/A",
+          "comment": "N/A",
+          "empty": "N/A",
+          "mixed": "N/A",
+          "single": "N/A",
+          "source": "N/A"
+        },
+        "js": {
+          "total": 44095,
+          "todo": 25,
+          "block": 265,
+          "blockEmpty": 14,
+          "comment": 1403,
+          "empty": 7096,
+          "mixed": 201,
+          "single": 1138,
+          "source": 35811
+        }
+      }
+    }
+  },
+
+  {
+    "meta": {
+      "taskName": "ember-dependencies",
+      "friendlyTaskName": "Ember Dependencies",
+      "taskClassification": {
+        "category": "dependencies",
+        "group": "ember"
+      }
+    },
+    "result": {
+      "keys": ["ember core libraries", "ember addon dependencies"],
+      "counts": {
+        "ember core libraries": 3,
+        "ember addon dependencies": 0
+      },
+      "results": {
+        "ember core libraries": [
+          { "name": "ember-source", "version": "~3.12.0" },
+          { "name": "ember-cli", "version": "~3.12.0" },
+          { "name": "ember-data", "version": "~3.12.0" }
+        ],
+        "ember addon dependencies": []
+      }
+    }
+  },
+
+  {
+    "meta": {
+      "taskName": "outdated-dependencies",
+      "friendlyTaskName": "Outdated Dependencies",
+      "taskClassification": {
+        "category": "dependencies"
+      }
+    },
+    "result": {
+      "keys": ["major", "minor", "patch", "nonSemver"],
+      "counts": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0,
+        "nonSemver": 0
+      },
+      "results": {
+        "major": [
+          {
+            "name": "@ember/optional-features",
+            "latest": "2.3.0",
+            "installed": "1.0.0",
+            "wanted": "2.3.0",
+            "packageJson": "^1.0.0",
+            "devDependency": true
+          }
+        ],
+        "minor": [],
+        "patch": [],
+        "nonSemver": []
+      }
+    }
+  }
+]
