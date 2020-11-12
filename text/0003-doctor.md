@@ -25,8 +25,10 @@ This RFC proposes the addition of a new subcommand to checkup's CLI: `checkup do
 
 Checkup's `doctor` checks will be structured very similarly to standard tasks:
 
-- checks will be configured in the `.checkuprc` in a `checks` configuration property
+- checks will be configured in a config file (maybe or maybe not `.checkuprc`) in a `checks` configuration property
+  - the config needs to be able to be loaded from an HTTP endpoint in addition to locally in the project, since we want to be able to run standardized doctor tasks
 - checks will be loaded via a `registerDoctorTask` hook
+  - while we could use `registerTask`, having a separate hook/API to load checks allows us to keep them separated from regular tasks, which will lead to less conditional evaluations to determine whether tasks are doctor checks or regular tasks
 - checks will use a similar structure to tasks, using a class with an async `run` method
 
 checks will differ from standard tasks in the following ways:
